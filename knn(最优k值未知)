@@ -1,0 +1,64 @@
+import pandas as pd
+import numpy as np
+import operator
+from math import *
+
+
+def knn(trainData, testData, labels, k):
+    
+    # 计算训练样本的行数
+    rowSize = trainData.shape[0]
+    # 计算训练样本和测试样本的差值
+    diff = np.tile(testData, (rowSize, 1)) - trainData
+    # 计算差值的平方和
+    sqrDiff = diff ** 2
+    sqrDiffSum = sqrDiff.sum(axis=1)
+    # 计算距离
+    distances = sqrDiffSum ** 0.5
+    # 对所得的距离从低到高进行排序
+    sortDistance = distances.argsort()
+    count = {}
+    
+    for i in range(k):
+        vote = labels[sortDistance[i]]
+        count[vote] = count.get(vote, 0) + 1
+    # 对类别出现的频数从高到低进行排序
+
+    sortCount = sorted(count.items(), key=operator.itemgetter(1), reverse=True)
+    
+    # 返回出现频数最高的类别
+    return sortCount[0][0] 
+
+
+def knn2(Data):
+    end = int(Data.shape[0:][1])
+    l = len(Data)
+
+    trainData = Data[0:int(0.6 * l), 0:end - 1]
+    testData = Data[int(0.6 * l):, 0:end - 1]
+    labels = Data[:, end - 1]
+    testDataSize = testData.shape[0]
+    T = 0  # 正确个数
+    A = 0  # 所有个数
+    R = 0  # 结果正确率
+    K = 0  # 记录当前k值
+    print(end - 1)
+    for k in range(1, floor(sqrt(testDataSize))):
+    
+        for i in range(1, testDataSize):
+            
+            result = knn(trainData, testData[i], labels, k)
+            A = A + 1
+            # 当预测结果与原本分类相同时T加1
+            if result == labels[len(trainData) + i]:
+                T = T + 1
+        # if T/A >R:
+        R = T / A  # 正确率
+        K = k  # 当前k值
+        print(R)
+        print(K)
+
+
+Data = (pd.read_csv('C:/大数据分析/optdigits_tra.csv', header=None))
+Data = np.array(Data, type(float))#dataframe类型转numpy数组
+knn2(Data)
