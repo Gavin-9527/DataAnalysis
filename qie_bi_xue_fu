@@ -1,0 +1,14 @@
+
+from numpy import *
+
+score = random.randint(0,100,size=100)
+e = mean(score)
+u = std(score)
+number = []
+
+for i in score:
+    if (i-e)/u > 1.7:
+        number.append(i)
+
+
+print(number)
